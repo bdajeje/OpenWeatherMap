@@ -23,7 +23,7 @@ int main(int argc, char** argv)
   Config::init(argv[1]);
 
   // Read city list of IDs
-  if(!CityList::init("cities.json"))
+  if(!CityList::init(utils::extractDir(argv[0]) + "/cities.json"))
   {
     std::cerr << "Can't read city list" << std::endl;
     return EXIT_FAILURE;

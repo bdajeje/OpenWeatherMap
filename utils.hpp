@@ -6,6 +6,7 @@
 namespace utils {
 
 unsigned int currentTimestamp();
+std::string extractDir(const std::string& path);
 
 namespace file {
 

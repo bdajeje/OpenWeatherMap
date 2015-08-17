@@ -10,6 +10,12 @@ unsigned int currentTimestamp()
   return std::chrono::duration_cast<std::chrono::seconds>(std::chrono::system_clock::now().time_since_epoch()).count();
 }
 
+std::string extractDir(const std::string& path)
+{
+  size_t offset = path.find_last_of("/");
+  return path.substr(0, offset);
+}
+
 namespace file {
 
 bool read( const std::string& filepath, std::string& result )
