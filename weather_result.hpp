@@ -31,6 +31,7 @@ class WeatherResult final
 
     void parseResult(const std::string& result);
 
+    static void validate(const rapidjson::GenericValue<rapidjson::UTF8<>>& document, const char* key);
     static std::string jsonTemperature(double temperature);
     static double toCelcus(double kelvin);
     static double toFahrenheit(double kelvin);

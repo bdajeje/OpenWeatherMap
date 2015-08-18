@@ -19,13 +19,30 @@ void WeatherResult::parseResult(const std::string& result)
   rapidjson::Document document;
   document.Parse<0>(result.c_str());
 
+  // Validate parsing of JSON response
   if( !document.IsObject() )
     throw std::runtime_error("result syntax error - invalid json: " + result);
 
-  const auto& city    = document["city"];
-  const auto& list    = document["list"][static_cast<rapidjson::SizeType>(0)];
+  // Weather API returned an error
+  if( document.HasMember("message") )
+    throw std::runtime_error(document["message"].GetString());
+
+  // Validate presence of every values
+  validate(document, "city");
+  validate(document, "list");
+  const auto& city = document["city"];
+  const auto& list = document["list"][static_cast<rapidjson::SizeType>(0)];
+  validate(list, "weather");
+  validate(list, "main");
   const auto& weather = list["weather"][static_cast<rapidjson::SizeType>(0)];
   const auto& extra   = list["main"];
+  validate(city, "name");
+  validate(city, "id");
+  validate(weather, "description");
+  validate(extra, "temp");
+  validate(extra, "temp_min");
+  validate(extra, "temp_max");
+  validate(extra, "humidity");
 
   _city_name           = city["name"].GetString();
   _city_id             = city["id"].GetInt();
@@ -34,6 +51,12 @@ void WeatherResult::parseResult(const std::string& result)
   _min_temperature     = extra["temp_min"].GetDouble();
   _max_temperature     = extra["temp_max"].GetDouble();
   _humidity            = extra["humidity"].GetInt();
+}
+
+void WeatherResult::validate(const rapidjson::GenericValue<rapidjson::UTF8<>>& document, const char* key)
+{
+  if(!document.HasMember(key))
+    throw std::runtime_error(std::string("result syntax error - no key: ") + key);
 }
 
 std::string WeatherResult::toJSON() const
