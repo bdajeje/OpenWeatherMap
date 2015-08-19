@@ -24,8 +24,14 @@ void WeatherResult::parseResult(const std::string& result)
     throw std::runtime_error("result syntax error - invalid json: " + result);
 
   // Weather API returned an error
-  if( document.HasMember("message") )
-    throw std::runtime_error(document["message"].GetString());
+  validate(document, "cod");
+  if( strcmp(document["cod"].GetString(), "200") != 0 )
+  {
+    if( document.HasMember("message") )
+      throw std::runtime_error(document["message"].GetString());
+    else
+      throw std::runtime_error("result syntax error - can't read reply");
+  }
 
   // Validate presence of every values
   validate(document, "city");
